@@ -1,0 +1,41 @@
+FileHandler
+Henry Smialowicz (hzk8dg)
+04/10/2026
+
+================
+--- Purpose ---
+================
+Given a request for a file in the data folder -> return the contents of that file.
+Includes path traversal protection to prevent accessing files outside the data/ directory.
+
+=======================
+--- Implementation ---
+=======================
+
+FileHandler
+-------------------
+-content: String
+-------------------
++FileHandler()
++handle(filename: String): String
++getContent(): String
++setContent(content: String): void
+
+=================
+--- Behavior ---
+=================
+handle():
+  1. Resolves the filename relative to the data/ directory
+  2. Checks that the resolved path is within data/ (prevents path traversal)
+  3. If path traversal detected: returns "Path traversal attempt detected"
+  4. If file not found: returns "File Not Found."
+  5. If IO error: returns "Insufficient File"
+  6. Otherwise: returns the full file contents as a String
+
+===============
+--- Testing ---
+===============
+Case 1. Request for a valid file in data -> returns full file contents
+Case 2. Request for a file outside data (path traversal) -> returns error string
+Case 3. Request for a non-existent file -> returns "File Not Found."
+Case 4. Request for an unreadable file -> returns "Insufficient File"

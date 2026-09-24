@@ -1,0 +1,85 @@
+# TopSecret Entity-Relationship Diagram
+
+This document contains the ERD for the TopSecret project database, showing all tables, their columns, and the relationships between them.
+
+## ER Diagram (Mermaid Format)
+
+```mermaid
+erDiagram
+    COUNTRIES {
+        INTEGER id PK
+        TEXT name "NOT NULL UNIQUE"
+    }
+
+    FACILITIES {
+        INTEGER id PK
+        TEXT name "NOT NULL"
+        TEXT abbreviation "NOT NULL UNIQUE"
+        INTEGER country_id FK "-> COUNTRIES.id"
+    }
+
+    AGENTS {
+        INTEGER id PK
+        TEXT name "NOT NULL"
+        TEXT date_of_birth
+        TEXT date_of_death
+        TEXT notes
+        INTEGER facility_id FK "NOT NULL -> FACILITIES.id"
+    }
+
+    MISSIONS {
+        INTEGER id PK
+        TEXT title
+        TEXT brief
+        TEXT date
+        INTEGER facility_id FK "NOT NULL -> FACILITIES.id"
+    }
+
+    MISSION_AGENTS {
+        INTEGER mission_id PK_FK "-> MISSIONS.id"
+        INTEGER agent_id PK_FK "-> AGENTS.id"
+    }
+
+    BRIEFS {
+        INTEGER id PK
+        INTEGER mission_id FK "NOT NULL -> MISSIONS.id"
+        TEXT content "NOT NULL"
+    }
+
+    AGENT_MESSAGES {
+        INTEGER id PK
+        INTEGER agent_id FK "NOT NULL -> AGENTS.id"
+        TEXT body "NOT NULL"
+        TEXT sender_username "NOT NULL"
+        INTEGER is_read "DEFAULT 0"
+    }
+
+    AUDIT_LOG {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT event_type "NOT NULL"
+        TEXT content_type "NOT NULL"
+        TEXT content_id
+        TEXT username "NOT NULL"
+        TEXT occurred_at "NOT NULL"
+    }
+
+    COUNTRIES ||--o{ FACILITIES : "contains"
+    FACILITIES ||--o{ AGENTS : "houses"
+    FACILITIES ||--o{ MISSIONS : "runs"
+    MISSIONS ||--o{ MISSION_AGENTS : "assigns"
+    AGENTS ||--o{ MISSION_AGENTS : "participates in"
+    MISSIONS ||--o{ BRIEFS : "has"
+    AGENTS ||--o{ AGENT_MESSAGES : "receives"
+```
+
+## Cardinality Summary
+
+| Relationship | Cardinality | Description |
+|---|---|---|
+| Country → Facilities | One-to-Many | Each facility optionally belongs to one country |
+| Facility → Agents | One-to-Many | Each agent belongs to exactly one facility |
+| Facility → Missions | One-to-Many | Each mission is run by one facility |
+| Mission ↔ Agents | Many-to-Many | Via MISSION_AGENTS junction table; agents from any facility can join |
+| Mission → Briefs | One-to-Many | Each brief belongs to one mission |
+| Agent → Messages | One-to-Many | Each message is addressed to one agent |
+| Audit Log | Standalone | Independent event log, no foreign keys |

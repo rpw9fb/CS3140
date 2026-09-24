@@ -1,0 +1,97 @@
+Missions
+========================================
+
+Overview
+--------
+The Missions entity represents covert operations managed by
+the agency. Each mission is run by one Facility and may have
+zero or more Briefs (stored as the "brief" field). Agents are
+assigned to missions through a many-to-many relationship,
+enabling joint operations where agents from any Facility can
+participate in the same mission.
+
+Database Schema
+--------
+missions table:
+  id          INTEGER PRIMARY KEY
+  title       TEXT
+  brief       TEXT
+  date        TEXT
+  facility_id INTEGER (FK -> facilities.id)
+
+mission_agents junction table:
+  mission_id  INTEGER (FK -> missions.id)
+  agent_id    INTEGER (FK -> agents.id)
+  PRIMARY KEY (mission_id, agent_id)
+
+Relationships
+--------
+- A Mission belongs to one Facility (facility_id)
+- A Mission has zero or more Agents (via mission_agents)
+- An Agent may be assigned to multiple Missions
+- Joint operations: agents from ANY facility can be assigned
+  to a mission, not just agents from the mission's facility
+
+Class Diagram
+--------
+Mission
+--------
+-id: int
+-title: String
+-brief: String
+-date: String
+-facilityId: int
+-agentIds: List<Integer>
+--------
++Mission(id, title, brief, date, facilityId, agentIds)
++getId(): int
++getTitle(): String
++getBrief(): String
++getDate(): String
++getFacilityId(): int
++getAgentIds(): List<Integer>
++setTitle(String): void
++setBrief(String): void
++setDate(String): void
++setFacilityId(int): void
++setAgentIds(List<Integer>): void
++addAgentId(int): void
++removeAgentId(int): void
++toString(): String
+
+DatabaseManager Methods
+--------
+addMission(title, brief, date, facilityId, agentIds)
+  - Creates a new mission and links agents (from any facility)
+  - Throws if facility or any agent does not exist
+
+getAllMissions()
+  - Returns all missions with their assigned agent IDs
+
+getMissionById(id)
+  - Returns a single Mission or null if not found
+
+assignAgentToMission(missionId, agentId)
+  - Assigns an agent to an existing mission
+  - Silently returns if already assigned
+  - Throws if agent or mission does not exist
+
+removeAgentFromMission(missionId, agentId)
+  - Removes an agent assignment from a mission
+
+getAgentsForMission(missionId)
+  - Returns List<Agent> of agents assigned to a mission
+
+getMissionsForAgent(agentId)
+  - Returns List<Mission> of missions an agent is assigned to
+
+searchMissions(phrase)
+  - Searches missions by brief text (case-insensitive)
+
+Joint Operations
+--------
+In previous versions, agents could only be assigned to
+missions at their own facility. This restriction has been
+removed to support joint operations. Now, any agent from
+any facility can be assigned to any mission, regardless of
+which facility runs the mission.

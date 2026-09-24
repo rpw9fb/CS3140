@@ -1,0 +1,39 @@
+SessionManager
+04/10/2026
+
+================
+--- Purpose ---
+================
+Utility class for HTTP session management. Reads SESSIONID cookies
+from incoming requests and checks them against the active session maps
+maintained by WebController.
+
+=======================
+--- Implementation ---
+=======================
+
+SessionManager
+----------------------------
+(no fields)
+----------------------------
++checkSession(exchange: HttpExchange, sessions: ConcurrentHashMap<String, String>): boolean
++isSessionAdmin(exchange: HttpExchange, adminSessions: ConcurrentHashMap<String, Boolean>): boolean
+
+=================
+--- Behavior ---
+=================
+- checkSession: Parses the Cookie header, extracts the SESSIONID value,
+  and returns true if that session ID exists in the sessions map.
+- isSessionAdmin: Same cookie parsing, returns the admin flag from
+  adminSessions map (defaults to false if not found).
+
+===============
+--- Testing ---
+===============
+Unit Tests:
+  - checkSession with valid session cookie -> returns true
+  - checkSession with no cookie -> returns false
+  - checkSession with invalid session ID -> returns false
+  - isSessionAdmin with admin session -> returns true
+  - isSessionAdmin with non-admin session -> returns false
+  - isSessionAdmin with no cookie -> returns false

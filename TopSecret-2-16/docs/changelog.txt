@@ -1,0 +1,153 @@
+TopSecret Changelog
+====================
+
+Version 6.0 (Homework 6) — April 2026
+--------------------------------------
+Models:
+  - Added Country entity (id, name)
+  - Extended Facility with countryId and countryName fields
+  - Added countries table to database with UNIQUE constraint on name
+  - Extended facilities table with country_id foreign key to countries
+  - Added updateAgent() to DatabaseManager
+  - Added updateFacility() to DatabaseManager with country_id support
+  - Added updateMission() to DatabaseManager
+  - Added facilityDelete() and agentDelete() with orphan protection
+  - Added getAllCountries() and addCountry() to DatabaseManager
+  - Audit log now records UPDATE events for agents, facilities, and missions
+
+Web Interface:
+  - Added CSS styling across all HTML pages (terminal-themed green-on-dark design)
+  - Added persistent navigation bar visible on every page with logout link
+  - Mission detail page now shows linked facility and assigned agents (clickable)
+  - Agent detail page now shows linked facility and assigned missions (clickable)
+  - Facility detail page now shows linked country, agents, and missions (clickable)
+  - Added create and edit forms for missions, agents, and facilities (admin only)
+  - Edit forms pre-populated with existing record values
+  - Facility form includes country selection dropdown
+  - All create/edit actions restricted to admin users
+
+Messaging (Web):
+  - Added /messages route showing inbox for the current user
+  - Added /messages/view route to read a single message (marks as read)
+  - Added /messages/send route with agent dropdown and message body field
+  - Inbox displays read/unread status and message preview
+  - Only the matching agent-username can view their messages
+  - Messages menu item visible in navbar for all logged-in users
+
+Controller:
+  - Added updateAgent(), updateFacility(), updateMission() to ProjectControl
+  - Added getMissionsAtFacility() to ProjectControl
+  - Added retrieveAgent() and retrieveFacility() lookup helpers
+  - Added markMessageAsRead() to ProjectControl and DatabaseManager
+  - Added getMessageById() to ProjectControl and DatabaseManager
+  - Added listCountries() to ProjectControl
+  - recordUpdateEvent() now called for all edit operations
+
+
+Version 5.0 (Homework 5) — April 2026
+--------------------------------------
+Models:
+  - Added briefs table (id, mission_id FK, content)
+  - Removed same-facility restriction for mission agent assignments (joint operations)
+  - Agents from any facility may now be assigned to any mission
+
+Web Interface:
+  - Added login page with POST authentication and session cookie
+  - Added root context redirecting unauthenticated users to login
+  - Added /briefs, /agents, /facilities, /search, /search/results routes
+  - Added /audit route (admin only)
+  - Added /admin/users and /admin/promote routes (admin only)
+  - Session cookie set as HttpOnly, expires on browser close
+  - Web view requires existing user accounts to start
+
+Terminal Interface:
+  - Terminal remains the default interface; -w argument launches web mode
+  - Agents assignable to missions within terminal session
+
+Controller:
+  - Added WebController handling all HTTP routes
+  - Added SessionManager for cookie-based session validation and admin checks
+  - Shared ProjectControl used by both terminal and web interfaces
+  - Added assignAgentToMission() and removeAgentFromMission() to ProjectControl
+  - Added getMissionsForAgent() and getAgentsForMission() to ProjectControl
+
+Messaging (Terminal):
+  - Users can address a message to an agent by selecting from agent list
+  - Agent retrieves messages by logging in with a username matching agent name (case-insensitive)
+  - Only the matching user can view their messages
+  - No admin permission required to send or view messages
+  - Messages menu accessible from main terminal menu
+
+
+Version 4.0 (Homework 4) — March 2026
+--------------------------------------
+Models:
+  - Added Facility entity (id, name, abbreviation)
+  - Added Agent entity (id, name, date_of_birth, date_of_death, notes, facility_id)
+  - Added Message entity (id, recipientAgentId, body, senderUsername, isRead)
+  - Extended Mission with facility_id and agentIds list, setters, and agent helpers
+  - Added AuditLog model tracking event type, content type, content id, username, timestamp
+  - Extended Password with multi-user support, admin/user roles,
+    promoteToAdmin(), getAllUsers(), webAuth(), and inline account creation
+  - Password validation now requires uppercase and lowercase letters (min 5 chars)
+  - Username validation requires min 3 chars, letters/digits/hyphens/underscores only
+
+Database:
+  - Added facilities table
+  - Added agents table with facility_id foreign key
+  - Added mission_agents junction table (many-to-many missions to agents)
+  - Added agent_messages table (id, agent_id, body, sender_username, is_read)
+  - Added audit_log table (id, event_type, content_type, content_id, username, occurred_at)
+  - Added facility_id foreign key to missions table
+  - Enabled PRAGMA foreign_keys = ON
+  - Orphan protection: facilities and agents cannot be deleted if referenced by other records
+
+Controller:
+  - Added ProjectControl as central coordinator with audit logging
+  - Extended DatabaseManager with facility, agent, and mission CRUD operations
+  - Added addAgentMessage() and getAgentMessagesForRecipientUsername() to DatabaseManager
+  - Added SearchFeature interface implemented by DatabaseManager
+  - FileHandler includes path traversal protection
+
+Terminal Interface:
+  - Menu-driven UI with submenus for Missions, Agents, Facilities, Messages
+  - Browsing, listing, and adding entries for all entity types
+  - New entries immediately visible after creation
+  - Audit log review available to admin users only (R option in main menu)
+  - Promote user to admin available to admin users only (P option in main menu)
+  - Command-line args: -p (change password), -u (create user), -w (web mode)
+  - Non-admin users do not see admin-only menu options
+
+Access Roles:
+  - First account created is automatically admin
+  - Subsequent accounts are standard users by default
+  - Admin can promote any standard user to admin
+  - Standard users can read; admins can create entries, manage users, view audit log
+
+Testing:
+  - Reorganized tests into controllerTests, modelsTests, and viewTests packages
+  - Added unit and integration tests for all new features
+  - Added WebControllerTest, SessionManagerTest
+  - Added HTMLViewTest, HTMLViewIntegrationTest
+  - Added TerminalViewTest, TerminalViewIntegrationTest
+  - Added MessageUnitTest, MessageIntegrationTest
+  - Added AccessRolesTest for admin role management
+
+
+Version 2.0 (Homework 2) — March 2026
+--------------------------------------
+  - Initial SQLite database for missions (title, brief, date)
+  - Password authentication with cipher-based encryption
+  - Cipher class for substitution-cipher decryption
+  - FileHandler for data file reading
+  - Mission search feature
+  - Terminal menu UI for browsing and searching missions
+  - JaCoCo code coverage integration
+
+
+Version 1.0 (Homework 1) — February 2026
+-----------------------------------------
+  - Initial project setup with Gradle
+  - FileHandler for reading encrypted files from data/
+  - Command-line argument processing
+  - Basic file listing and cipher key decryption

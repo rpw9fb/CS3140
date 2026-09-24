@@ -1,0 +1,94 @@
+TopSecret Database Schema
+04/23/2026
+
+The database uses SQLite and contains eight tables.
+All tables are created automatically by DatabaseManager on startup.
+
+=====================================
+1. countries
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY
+name            | TEXT    | NOT NULL UNIQUE
+
+=====================================
+2. facilities
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY
+name            | TEXT    | NOT NULL
+abbreviation    | TEXT    | NOT NULL UNIQUE
+country_id      | INTEGER | FK -> countries(id)
+
+=====================================
+3. agents
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY
+name            | TEXT    | NOT NULL
+date_of_birth   | TEXT    |
+date_of_death   | TEXT    |
+notes           | TEXT    |
+facility_id     | INTEGER | NOT NULL, FK -> facilities(id)
+
+=====================================
+4. missions
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY
+title           | TEXT    |
+brief           | TEXT    |
+date            | TEXT    |
+facility_id     | INTEGER | NOT NULL, FK -> facilities(id)
+
+=====================================
+5. mission_agents (junction table)
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+mission_id      | INTEGER | PK, FK -> missions(id)
+agent_id        | INTEGER | PK, FK -> agents(id)
+
+Note: Composite primary key (mission_id, agent_id).
+Agents from any facility may be assigned to any mission (joint operations).
+
+=====================================
+6. briefs
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY
+mission_id      | INTEGER | NOT NULL, FK -> missions(id)
+content         | TEXT    | NOT NULL
+
+=====================================
+7. agent_messages
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY
+agent_id        | INTEGER | NOT NULL, FK -> agents(id)
+body            | TEXT    | NOT NULL
+sender_username | TEXT    | NOT NULL
+is_read         | INTEGER | DEFAULT 0 (0 = unread, 1 = read)
+
+=====================================
+8. audit_log
+=====================================
+Column          | Type    | Constraints
+----------------|---------|------------------
+id              | INTEGER | PRIMARY KEY AUTOINCREMENT
+event_type      | TEXT    | NOT NULL (READ, CREATE, UPDATE)
+content_type    | TEXT    | NOT NULL (BRIEF, AGENT, FACILITY, MISSION, USER_ACCOUNT, LOGIN, MESSAGE)
+content_id      | TEXT    |
+username        | TEXT    | NOT NULL
+occurred_at     | TEXT    | NOT NULL (ISO 8601 timestamp)
+
+=====================================
+Pragma Settings
+=====================================
+- PRAGMA foreign_keys = ON (enforced on each connection)

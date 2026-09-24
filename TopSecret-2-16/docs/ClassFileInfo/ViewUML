@@ -1,0 +1,81 @@
+View (Interface)
+------------------
++mainMenu(isAdmin: boolean): String
++missionsMenu(): String (default)
++missionList(titles: List<String>): String
++missionDetail(missionText: String): String (default)
++missionSearchResults(matches: List<Mission>, phrase: String): String
++missionAdded(updatedTitles: List<String>): String (default)
++agentsMenu(): String (default)
++agentList(agents: List<Agent>): String
++agentDetail(agent: Agent): String
++agentAdded(updatedAgents: List<Agent>): String (default)
++facilitiesMenu(): String (default)
++facilityList(facilities: List<Facility>): String
++facilityDetail(facility: Facility): String (default)
++facilityAdded(updatedFacilities: List<Facility>): String (default)
++auditLog(lines: List<String>): String
++error(message: String): String
+------------------
+
+TerminalView implements View
+------------------
+
+------------------
++mainMenu(isAdmin: boolean): String
++missionsMenu(): String
++missionList(titles: List<String>): String
++missionDetail(missionText: String): String
++missionSearchResults(matches: List<Mission>, phrase: String): String
++missionAdded(updatedTitles: List<String>): String
++agentsMenu(): String
++agentList(agents: List<Agent>): String
++agentDetail(agent: Agent): String
++agentAdded(updatedAgents: List<Agent>): String
++facilitiesMenu(): String
++facilityList(facilities: List<Facility>): String
++facilityDetail(facility: Facility): String
++facilityAdded(updatedFacilities: List<Facility>): String
++countryList(countries: List<Country>): String
++messagesMenu(): String
++agentInbox(messages: List<Message>): String
++auditLog(lines: List<String>): String
++error(message: String): String
++unknownOption(input: String): String
++welcome(): String
++goodbye(): String
+------------------
+
+HTMLView
+------------------
+
+------------------
++loginPage(error: String): String
++mainMenu(isAdmin: boolean): String
++missionList(missions: List<Mission>, isAdmin: boolean): String
++missionList(titles: List<String>): String
++missionDetail(missionText: String): String
++missionDetail(mission: Mission, facility: Facility, agents: List<Agent>): String
++missionDetail(mission: Mission, facility: Facility, agents: List<Agent>, isAdmin: boolean): String
++missionForm(mission: Mission, facilities: List<Facility>, allAgents: List<Agent>, isAdmin: boolean): String
++missionSearchPage(): String
++missionSearchResults(matches: List<Mission>, phrase: String): String
++agentList(agents: List<Agent>, isAdmin: boolean): String
++agentList(agents: List<Agent>): String
++agentDetail(agent: Agent): String
++agentDetail(agent: Agent, facility: Facility, missions: List<Mission>): String
++agentDetail(agent: Agent, facility: Facility, missions: List<Mission>, isAdmin: boolean): String
++agentForm(agent: Agent, facilities: List<Facility>, isAdmin: boolean): String
++facilityList(facilities: List<Facility>, isAdmin: boolean): String
++facilityList(facilities: List<Facility>): String
++facilityDetail(facility: Facility, agents: List<Agent>): String
++facilityDetail(facility: Facility, agents: List<Agent>, missions: List<Mission>): String
++facilityDetail(facility: Facility, agents: List<Agent>, missions: List<Mission>, isAdmin: boolean): String
++facilityForm(facility: Facility, countries: List<Country>, isAdmin: boolean): String
++agentInbox(messages: List<Message>, currentUser: String): String
++sendMessagePage(agents: List<Agent>): String
++messageDetail(message: Message): String
++auditLog(lines: List<String>): String
++userManagement(users: List<Map.Entry<String,String>>, message: String): String
++error(message: String): String
+------------------

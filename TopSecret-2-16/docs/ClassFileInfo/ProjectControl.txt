@@ -1,0 +1,105 @@
+Joshua Thirumalai (rpw9fb)
+04/10/2026
+
+ProjectControl
+-----------------
+-fileHandler: FileHandler
+-databaseManager: DatabaseManager
+-currentUsername: String
+-----------------
+
+Constructors:
++ProjectControl(fileHandler: FileHandler)
++ProjectControl(fileHandler: FileHandler, databaseManager: DatabaseManager)
++ProjectControl(fileHandler: FileHandler, dbName: String)
++ProjectControl(databaseManager: DatabaseManager)
+
+Mission Methods:
++addMission(title: String, brief: String, date: String, facilityId: int, agentIds: List<Integer>): void throws SQLException
++importMissions(tsvFile: String): void
++listMissionTitles(): List<String>
++retrieveMission(number: int): String
++retrieveMission(number: int, username: String): String
++searchMissions(phrase: String): List<Mission>
++getAllMissions(): List<Mission> throws SQLException
++getMissionById(id: int): Mission throws SQLException
++updateMission(id: int, title: String, brief: String, date: String, facilityId: int, agentIds: List<Integer>): boolean throws SQLException
++assignAgentToMission(missionId: int, agentId: int): void throws SQLException
++removeAgentFromMission(missionId: int, agentId: int): void throws SQLException
++getAgentsForMission(missionId: int): List<Agent> throws SQLException
++getMissionsForAgent(agentId: int): List<Mission> throws SQLException
++getMissionsAtFacility(facilityId: int): List<Mission> throws SQLException
+
+File Retrieval:
++retrieve(num: int): String
++retrieve(num: int, key: String): String
++listFiles(): String (static)
+
+Agent Methods:
++listAgents(): List<Agent> throws SQLException
++addAgent(name: String, dob: String, dod: String, notes: String, facilityId: int): void throws SQLException
++updateAgent(id: int, name: String, dob: String, dod: String, notes: String, facilityId: int): boolean throws SQLException
++retrieveAgent(id: int): Agent
+
+Facility Methods:
++listFacilities(): List<Facility> throws SQLException
++addFacility(name: String, abbreviation: String): void throws SQLException
++addFacility(name: String, abbreviation: String, countryId: Integer): void throws SQLException
++updateFacility(id: int, name: String, abbreviation: String): boolean throws SQLException
++updateFacility(id: int, name: String, abbreviation: String, countryId: Integer): boolean throws SQLException
++getAgentsAtFacility(facilityId: int): List<Integer> throws SQLException
++retrieveFacility(id: int): Facility
+
+Country Methods:
++listCountries(): List<Country> throws SQLException
+
+Agent Message Methods:
++addAgentMessage(recipientAgentId: int, body: String, senderUsername: String): void throws SQLException
++addAgentMessageForCurrentUser(recipientAgentId: int, body: String): void throws SQLException
++getAgentMessagesForCurrentUser(): List<Message> throws SQLException
++markMessageAsRead(messageId: int): void throws SQLException
++getMessageById(msgId: int): Message throws SQLException
+
+Audit Methods:
++setCurrentUsername(username: String): void
++getAuditLog(): AuditLog
++listAuditLogLines(): List<String>
++recordUserAccountCreated(createdUsername: String, actorUsername: String): boolean
++recordUserRoleChange(promotedUsername: String, actorUsername: String): boolean
++recordLogin(username: String): boolean
+
+Private:
+-getValidFiles(): File[] (static)
+-recordCreateEvent(type: String, contentId: String): void
+-recordReadEvent(type: String, contentId: String, username: String): void
+-recordUpdateEvent(type: String, contentId: String): void
+
+Tests
+------------------
+1. Mission Features
+- testListMissionTitles(): verifies titles fetched correctly
+- testRetrieveMission(): verifies mission retrieval w/ default username
+- testRetrieveMission_withUsername(): verifies mission retrieval w/ custom username
+- testSearchMission(): verifies mission search delegation
+- testAddMission(): verifies mission insertion
+
+2. Agent Features
+- testListAgents(): verifies agent list retrieval
+- testAddAgent(): verifies agent creation call
+- testRetrieveAgent(): verifies single agent lookup
+
+3. Facility Features
+- testListFacilities(): verifies facility list retrieval
+- testAddFacility(): verifies facility creation call
+- testRetrieveFacility(): verifies single facility lookup
+
+4. Audit Log Features
+- testAuditLog(): verifies audit log retrieval from DatabaseManager
+- testRecordLogin(): verifies login event recorded
+- testRecordUserAccountCreated(): verifies account creation event
+- testRecordUserRoleChange(): verifies role change event
+
+5. Message Features
+- testAddAgentMessage(): verifies message sent
+- testAddAgentMessageForCurrentUser(): verifies message sent with current user
+- testGetAgentMessagesForCurrentUser(): verifies inbox retrieval

@@ -1,0 +1,452 @@
+# TopSecret Project Architecture
+
+This document contains the UML class diagram for the TopSecret project and a brief explanation of how the system components interact.
+
+## UML Class Diagram (Mermaid Format)
+
+```mermaid
+classDiagram
+    direction TB
+
+    class TopSecret {
+        -String CREDENTIAL_FILE
+        -String KEY_PATH
+        -DatabaseManager db
+        +main(String[] args)$ void
+    }
+
+    class Password {
+        -String credentialFilePath
+        -String keyPath
+        -Scanner scanner
+        -Map~Character,Character~ encryptionMap
+        -Map~Character,Character~ decryptionMap
+        -String currentUsername
+        -boolean accountCreatedDuringAuthenticate
+        -String USERNAME_PATTERN$
+        +Password(String, String, Scanner)
+        +credentialFileExists() boolean
+        +getCurrentUsername() String
+        +consumeAccountCreatedDuringAuthenticate() boolean
+        +isValidUsername(String) boolean
+        +isValidPassword(String) boolean
+        +encrypt(String) String
+        +decrypt(String) String
+        +isCredentialsEmpty() boolean
+        +createCredentials() boolean
+        +webAuth(String, String) boolean
+        +authenticate() boolean
+        +changePassword() boolean
+        +addUser(String) boolean
+        +createUserUsernameOnly(String) boolean
+        +promoteToAdmin(String) boolean
+        +getAllUsers() List~Map.Entry~
+        +isAdminUser(String) boolean
+    }
+
+    class UserInterface {
+        -ProjectControl projectControl
+        -Scanner scanner
+        -TerminalView view
+        -boolean isAdmin
+        -Password password
+        +UserInterface(Password, Scanner, DatabaseManager)
+        +UserInterface(ProjectControl, Scanner)
+        +UserInterface(ProjectControl, Scanner, boolean)
+        +setAdmin(boolean) void
+        +run(String[]) void
+        +run() void
+        +searchMissions() void
+        +argument_handler(String[])$ String
+    }
+
+    class WebController {
+        +HTMLView view
+        +ProjectControl projectControl
+        +Password passwordHandler
+        +ConcurrentHashMap sessions
+        +ConcurrentHashMap adminSessions
+        +SessionManager sm
+        +WebController(Password)
+        +run() void
+        +rootContextResponse(HttpExchange) String
+        +briefsResponse(HttpExchange) String
+        +agentsResponse(HttpExchange) String
+        +facilityResponse(HttpExchange) String
+        +auditResponse(HttpExchange) String
+        +searchResponse(HttpExchange) String
+        +searchResultsResponse(HttpExchange) String
+        +adminUserResponse(HttpExchange) String
+        +loginResponse(HttpExchange) String
+        +logoutResponse(HttpExchange) void
+        +adminPromoteResponse(HttpExchange) String
+        +messagesResponse(HttpExchange) String
+        +viewMessageResponse(HttpExchange) String
+        +sendMessageResponse(HttpExchange) String
+        +handleRoot(HttpExchange) void
+        +handleLogin(HttpExchange) void
+        +handleBriefs(HttpExchange) void
+        +handleAgents(HttpExchange) void
+        +handleFacilities(HttpExchange) void
+        +handleAudit(HttpExchange) void
+        +handleSearch(HttpExchange) void
+        +handleSearchResults(HttpExchange) void
+        +handleAdminUsers(HttpExchange) void
+        +handleAdminPromote(HttpExchange) void
+        +handleMessages(HttpExchange) void
+        +handleViewMessage(HttpExchange) void
+        +handleSendMessage(HttpExchange) void
+        +sendResponse(HttpExchange, String) void
+        +checkIfAdmin(String) boolean
+    }
+
+    class SessionManager {
+        +checkSession(HttpExchange, ConcurrentHashMap) boolean
+        +isSessionAdmin(HttpExchange, ConcurrentHashMap) boolean
+    }
+
+    class ProjectControl {
+        -FileHandler fileHandler
+        -DatabaseManager databaseManager
+        -String currentUsername
+        +ProjectControl(FileHandler)
+        +ProjectControl(FileHandler, DatabaseManager)
+        +ProjectControl(FileHandler, String)
+        +ProjectControl(DatabaseManager)
+        +addMission(String, String, String, int, List) void
+        +importMissions(String) void
+        +listMissionTitles() List~String~
+        +retrieveMission(int) String
+        +retrieveMission(int, String) String
+        +searchMissions(String) List~Mission~
+        +getAllMissions() List~Mission~
+        +getMissionById(int) Mission
+        +updateMission(int, String, String, String, int, List) boolean
+        +assignAgentToMission(int, int) void
+        +removeAgentFromMission(int, int) void
+        +getAgentsForMission(int) List~Agent~
+        +getMissionsForAgent(int) List~Mission~
+        +getMissionsAtFacility(int) List~Mission~
+        +retrieve(int) String
+        +retrieve(int, String) String
+        +listFiles()$ String
+        +listAgents() List~Agent~
+        +addAgent(String, String, String, String, int) void
+        +updateAgent(int, String, String, String, String, int) boolean
+        +retrieveAgent(int) Agent
+        +listFacilities() List~Facility~
+        +addFacility(String, String) void
+        +addFacility(String, String, Integer) void
+        +updateFacility(int, String, String) boolean
+        +updateFacility(int, String, String, Integer) boolean
+        +getAgentsAtFacility(int) List~Integer~
+        +retrieveFacility(int) Facility
+        +listCountries() List~Country~
+        +addAgentMessage(int, String, String) void
+        +addAgentMessageForCurrentUser(int, String) void
+        +getAgentMessagesForCurrentUser() List~Message~
+        +markMessageAsRead(int) void
+        +getMessageById(int) Message
+        +setCurrentUsername(String) void
+        +getAuditLog() AuditLog
+        +listAuditLogLines() List~String~
+        +recordUserAccountCreated(String, String) boolean
+        +recordUserRoleChange(String, String) boolean
+        +recordLogin(String) boolean
+    }
+
+    class FileHandler {
+        -String content
+        +FileHandler()
+        +handle(String) String
+        +getContent() String
+        +setContent(String) void
+    }
+
+    class SearchFeature {
+        <<interface>>
+        +searchMissions(String) List~Mission~
+    }
+
+    class DatabaseManager {
+        -Random random
+        -Connection connection
+        -FileHandler fileHandler
+        -AuditLog auditLog
+        +String DEFAULT_AUDIT_USERNAME$
+        +DatabaseManager()
+        +DatabaseManager(String)
+        +DatabaseManager(String, Random)
+        +DatabaseManager(String, Random, boolean)
+        +getAuditLog() AuditLog
+        +closeConnection() void
+        +loadCountries(String) void
+        +addCountry(String) void
+        +getAllCountries() List~Country~
+        +loadFacilities(String) void
+        +addFacility(String, String) void
+        +addFacility(String, String, Integer) void
+        +updateFacility(int, String, String) boolean
+        +updateFacility(int, String, String, Integer) boolean
+        +facilityExists(int) boolean
+        +getAllFacilities() List~Facility~
+        +facilityDelete(int) boolean
+        +loadAgents(String) void
+        +addAgent(String, String, String, String, int) void
+        +updateAgent(int, String, String, String, String, int) boolean
+        +getAgentsFacility(int) List~Integer~
+        +agentExists(int) boolean
+        +getAllAgents() List~Agent~
+        +agentToFacility(int, int) boolean
+        +agentDelete(int) boolean
+        +loadData(String) void
+        +addMission(String, String, String, int, List) void
+        +updateMission(int, String, String, String, int, List) boolean
+        +getAllMissions() List~Mission~
+        +getMissionById(int) Mission
+        +assignAgentToMission(int, int) void
+        +removeAgentFromMission(int, int) void
+        +getAgentsForMission(int) List~Agent~
+        +getMissionsForAgent(int) List~Mission~
+        +searchMissions(String) List~Mission~
+        +getAllTitles() List~String~
+        +getMissionByNumber(int) String
+        +getMissionByNumber(int, String) String
+        +formatResults(List) String
+        +addAgentMessage(int, String, String) void
+        +getAgentMessagesForRecipientUsername(String) List~Message~
+        +markMessageAsRead(int) void
+        +getMessageById(int) Message
+    }
+
+    class AuditLog {
+        -Connection connection
+        +String EVENT_READ$
+        +String EVENT_CREATE$
+        +String EVENT_UPDATE$
+        +String TYPE_BRIEF$
+        +String TYPE_AGENT$
+        +String TYPE_FACILITY$
+        +String TYPE_MISSION$
+        +String TYPE_USER_ACCOUNT$
+        +String TYPE_LOGIN$
+        +String TYPE_MESSAGE$
+        +AuditLog(Connection)
+        +record(String, String, String, String) void
+        +recordRead(String, String, String) void
+        +recordCreate(String, String, String) void
+        +record(String, String, String, String, String) void
+        +readAllLines() List~String~
+    }
+
+    class Mission {
+        -int id
+        -String title
+        -String brief
+        -String date
+        -int facilityId
+        -List~Integer~ agentIds
+        +Mission(int, String, String, String, int, List)
+        +getId() int
+        +getTitle() String
+        +getBrief() String
+        +getDate() String
+        +getFacilityId() int
+        +getAgentIds() List~Integer~
+        +setTitle(String) void
+        +setBrief(String) void
+        +setDate(String) void
+        +setFacilityId(int) void
+        +setAgentIds(List) void
+        +addAgentId(int) void
+        +removeAgentId(int) void
+        +toString() String
+    }
+
+    class Agent {
+        -int id
+        -String name
+        -String dateOfBirth
+        -String dateOfDeath
+        -String notes
+        -int facilityId
+        +Agent(int, String, String, String, String, int)
+        +getId() int
+        +getName() String
+        +getDateOfBirth() String
+        +getDateOfDeath() String
+        +getNotes() String
+        +getFacilityId() int
+        +toString() String
+    }
+
+    class Facility {
+        -int id
+        -String name
+        -String abbreviation
+        -Integer countryID
+        -String countryName
+        +Facility(int, String, String, Integer, String)
+        +Facility(int, String, String)
+        +getID() int
+        +getName() String
+        +getAbbreviation() String
+        +getCountryID() Integer
+        +getCountryName() String
+        +toString() String
+    }
+
+    class Country {
+        -int id
+        -String name
+        +Country(int, String)
+        +getId() int
+        +getName() String
+    }
+
+    class Message {
+        -int id
+        -int recipientAgentId
+        -String body
+        -String senderUsername
+        -boolean isRead
+        +Message(int, int, String, String, boolean)
+        +Message(int, int, String, String)
+        +getId() int
+        +getRecipientAgentId() int
+        +getBody() String
+        +getSenderUsername() String
+        +isRead() boolean
+    }
+
+    class Cipher {
+        -Map~Character,Character~ decryptionMap
+        +Cipher(String)
+        +loadKey(String) void
+        +decrypt(String) String
+    }
+
+    class View {
+        <<interface>>
+        +mainMenu(boolean) String
+        +missionList(List) String
+        +missionSearchResults(List, String) String
+        +agentList(List) String
+        +agentDetail(Agent) String
+        +facilityList(List) String
+        +auditLog(List) String
+        +error(String) String
+    }
+
+    class TerminalView {
+        +mainMenu(boolean) String
+        +missionsMenu() String
+        +missionList(List) String
+        +missionDetail(String) String
+        +missionSearchResults(List, String) String
+        +missionAdded(List) String
+        +agentsMenu() String
+        +agentList(List) String
+        +agentDetail(Agent) String
+        +agentAdded(List) String
+        +facilitiesMenu() String
+        +facilityList(List) String
+        +facilityDetail(Facility) String
+        +facilityAdded(List) String
+        +countryList(List) String
+        +messagesMenu() String
+        +agentInbox(List) String
+        +auditLog(List) String
+        +error(String) String
+        +unknownOption(String) String
+        +welcome() String
+        +goodbye() String
+    }
+
+    class HTMLView {
+        +loginPage(String) String
+        +mainMenu(boolean) String
+        +missionList(List, boolean) String
+        +missionList(List) String
+        +missionDetail(String) String
+        +missionDetail(Mission, Facility, List) String
+        +missionDetail(Mission, Facility, List, boolean) String
+        +missionForm(Mission, List, List, boolean) String
+        +missionSearchPage() String
+        +missionSearchResults(List, String) String
+        +agentList(List, boolean) String
+        +agentList(List) String
+        +agentDetail(Agent) String
+        +agentDetail(Agent, Facility, List) String
+        +agentDetail(Agent, Facility, List, boolean) String
+        +agentForm(Agent, List, boolean) String
+        +facilityList(List, boolean) String
+        +facilityList(List) String
+        +facilityDetail(Facility, List) String
+        +facilityDetail(Facility, List, List) String
+        +facilityDetail(Facility, List, List, boolean) String
+        +facilityForm(Facility, List, boolean) String
+        +agentInbox(List, String) String
+        +sendMessagePage(List) String
+        +messageDetail(Message) String
+        +auditLog(List) String
+        +userManagement(List, String) String
+        +error(String) String
+    }
+
+    TopSecret --> Password : authenticates
+    TopSecret --> UserInterface : launches terminal mode
+    TopSecret --> WebController : launches web mode
+
+    UserInterface --> ProjectControl : routes commands
+    UserInterface --> TerminalView : renders output
+    UserInterface --> Password : manages credentials
+
+    WebController --> ProjectControl : routes commands
+    WebController --> HTMLView : renders pages
+    WebController --> Password : authenticates
+    WebController --> SessionManager : manages sessions
+
+    ProjectControl --> FileHandler : reads files
+    ProjectControl --> DatabaseManager : database operations
+    ProjectControl --> Cipher : decrypts secrets
+    ProjectControl --> AuditLog : records events
+
+    DatabaseManager ..|> SearchFeature : implements
+    DatabaseManager --> AuditLog : creates/uses
+    DatabaseManager --> FileHandler : loads TSV data
+    DatabaseManager --> Mission : creates/returns
+    DatabaseManager --> Agent : creates/returns
+    DatabaseManager --> Facility : creates/returns
+    DatabaseManager --> Country : creates/returns
+    DatabaseManager --> Message : creates/returns
+
+    TerminalView ..|> View : implements
+    HTMLView ..|> View : implements
+```
+
+## How It Works
+
+1. **Startup & Authentication (`TopSecret`, `Password`)**
+   The application begins in `TopSecret.java`. It instantiates `Password` to handle user authentication against the `credentials.cip` file. If no credentials exist, it guides the user to create the first account (which becomes admin). The `-w` flag launches the web interface; otherwise the terminal UI starts.
+
+2. **Terminal Interaction (`UserInterface`, `TerminalView`)**
+   Once authenticated, `UserInterface` presents a menu-driven terminal interface. It supports browsing missions, agents, facilities, sending/viewing messages, and (for admins) reviewing the audit log. All output is formatted through `TerminalView`. Command-line args `-p` (change password) and `-u` (create user) are also handled.
+
+3. **Web Interface (`WebController`, `HTMLView`, `SessionManager`)**
+   `WebController` starts an HTTP server on port 3002. It manages cookie-based sessions via `SessionManager`, protects all pages with login, and renders HTML via `HTMLView`. Admin-only pages include user management and audit log review. All pages include a persistent navigation bar with logout. Create and edit forms for all entity types are available to admin users. A messaging center is accessible to all logged-in users.
+
+4. **Core Controller (`ProjectControl`)**
+   `ProjectControl` is the central coordinator for all business logic. It delegates database operations to `DatabaseManager`, file operations to `FileHandler`/`Cipher`, and records all significant actions to `AuditLog`.
+
+5. **Data Layer (`DatabaseManager`, `FileHandler`, `Cipher`, `AuditLog`)**
+   - **`DatabaseManager`**: Connects to SQLite and manages tables for countries, facilities, agents, missions, mission-agent assignments, agent messages, and the audit log. Implements `SearchFeature` for keyword-based mission search.
+   - **`FileHandler`**: Reads flat files from the `data/` directory with path-traversal protection.
+   - **`Cipher`**: Builds a decryption map from a key file and decrypts substitution-ciphered strings.
+   - **`AuditLog`**: Records all READ, CREATE, and UPDATE events with timestamps into the `audit_log` table.
+
+6. **Entity Models (`Mission`, `Agent`, `Facility`, `Country`, `Message`)**
+   Data classes representing the core domain entities. `Mission` supports mutable fields and agent-list management. `Facility` now includes an optional country association via `Country`. `Message` represents inter-agent communications and tracks read status.
+
+7. **View Layer (`View`, `TerminalView`, `HTMLView`)**
+   The `View` interface defines rendering contracts. `TerminalView` formats output for the console. `HTMLView` generates HTML for the web interface, including login pages, lists, detail pages with linked related entities, create/edit forms, a messaging center, and admin pages.

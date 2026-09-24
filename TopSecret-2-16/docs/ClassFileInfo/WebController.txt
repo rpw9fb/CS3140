@@ -1,0 +1,105 @@
+WebController
+04/24/2026
+
+================
+--- Purpose ---
+================
+HTTP web server controller using Java's built-in HttpServer.
+Handles all web routes, session management via cookies, and delegates
+to HTMLView for page rendering and ProjectControl for business logic.
+Runs on http://localhost:3002/.
+
+=======================
+--- Implementation ---
+=======================
+
+WebController
+----------------------------
++view: HTMLView
++projectControl: ProjectControl
++passwordHandler: Password
++sessions: ConcurrentHashMap<String, String>
++adminSessions: ConcurrentHashMap<String, Boolean>
++sm: SessionManager
+----------------------------
++WebController(password: Password)
++run(): void
++rootContextResponse(exchange: HttpExchange): String
++briefsResponse(exchange: HttpExchange): String
++agentsResponse(exchange: HttpExchange): String
++facilityResponse(exchange: HttpExchange): String
++auditResponse(exchange: HttpExchange): String
++searchResponse(exchange: HttpExchange): String
++searchResultsResponse(exchange: HttpExchange): String
++adminUserResponse(exchange: HttpExchange): String
++loginResponse(exchange: HttpExchange): String
++logoutResponse(exchange: HttpExchange): void
++adminPromoteResponse(exchange: HttpExchange): String
++messagesResponse(exchange: HttpExchange): String
++viewMessageResponse(exchange: HttpExchange): String
++sendMessageResponse(exchange: HttpExchange): String
++handleRoot(exchange: HttpExchange): void
++handleLogin(exchange: HttpExchange): void
++handleBriefs(exchange: HttpExchange): void
++handleAgents(exchange: HttpExchange): void
++handleFacilities(exchange: HttpExchange): void
++handleAudit(exchange: HttpExchange): void
++handleSearch(exchange: HttpExchange): void
++handleSearchResults(exchange: HttpExchange): void
++handleAdminUsers(exchange: HttpExchange): void
++handleAdminPromote(exchange: HttpExchange): void
++handleMessages(exchange: HttpExchange): void
++handleViewMessage(exchange: HttpExchange): void
++handleSendMessage(exchange: HttpExchange): void
++sendResponse(exchange: HttpExchange, response: String): void
++checkIfAdmin(username: String): boolean
+-getSessionUsername(exchange: HttpExchange): String
+-parsePostParams(exchange: HttpExchange): Map<String, List<String>>
+-redirect(exchange: HttpExchange, location: String): void
+
+==============
+--- Routes ---
+==============
+/                 -> Login page or Main Menu (if session exists)
+/login            -> POST: authenticate, set session cookie, redirect to /
+/logout           -> Clear session, redirect to /
+/briefs           -> Mission list
+/briefs/{id}      -> Mission detail
+/briefs/create    -> GET: empty mission form; POST: create mission (admin only)
+/briefs/edit/{id} -> GET: pre-filled mission form; POST: update mission (admin only)
+/agents           -> Agent list
+/agents/{id}      -> Agent detail
+/agents/create    -> GET: empty agent form; POST: create agent (admin only)
+/agents/edit/{id} -> GET: pre-filled agent form; POST: update agent (admin only)
+/facilities           -> Facility list
+/facilities/{id}      -> Facility detail with agents, missions, and country
+/facilities/create    -> GET: empty facility form; POST: create facility (admin only)
+/facilities/edit/{id} -> GET: pre-filled facility form; POST: update facility (admin only)
+/audit            -> Audit log (admin only)
+/search           -> Mission search form
+/search/results   -> Search results (GET with ?q=phrase)
+/admin/users      -> User management table (admin only)
+/admin/promote    -> POST: promote user to admin (admin only)
+/messages         -> Inbox for current user
+/messages/view    -> GET: view and mark a message as read (?id=messageId)
+/messages/send    -> GET: send message form; POST: send message
+
+===============
+--- Testing ---
+===============
+Unit Tests:
+  - rootContextResponse: returns login page when no session, main menu when session exists
+  - briefsResponse: returns mission list or detail based on path
+  - agentsResponse: returns agent list or detail
+  - facilityResponse: returns facility list or detail with agents
+  - auditResponse: redirects to login if not admin
+  - searchResponse/searchResultsResponse: handles search flow
+  - loginResponse: POST with valid/invalid credentials
+  - logoutResponse: clears session and redirects
+  - adminPromoteResponse: promotes user and records audit event
+  - adminUserResponse: returns user management page
+  - messagesResponse: returns inbox for current user
+  - viewMessageResponse: returns message detail and marks as read
+  - sendMessageResponse: GET returns send form, POST sends message
+  - sendResponse: sets content type and writes body
+  - checkIfAdmin: delegates to passwordHandler.isAdminUser

@@ -1,0 +1,84 @@
+Agent
+--------
+-id: int
+-name: String
+-dateOfBirth: String
+-dateOfDeath: String
+-notes: String
+-facilityId: int
+--------
++Agent(id: int, name: String, dateOfBirth: String, dateOfDeath: String, notes: String, facilityId: int)
++getId(): int
++getName(): String
++getDateOfBirth(): String
++getDateOfDeath(): String
++getNotes(): String
++getFacilityId(): int
++toString(): String
+
+Facility
+--------
+-id: int
+-name: String
+-abbreviation: String
+-countryID: Integer
+-countryName: String
+--------
++Facility(id: int, name: String, abbreviation: String, countryID: Integer, countryName: String)
++Facility(id: int, name: String, abbreviation: String)
++getID(): int
++getName(): String
++getAbbreviation(): String
++getCountryID(): Integer
++getCountryName(): String
++toString(): String
+
+Country
+--------
+-id: int
+-name: String
+--------
++Country(id: int, name: String)
++getId(): int
++getName(): String
+
+Mission
+--------
+-id: int
+-title: String
+-brief: String
+-date: String
+-facilityId: int
+-agentIds: List<Integer>
+--------
++Mission(id: int, title: String, brief: String, date: String, facilityId: int, agentIds: List<Integer>)
++getId(): int
++getTitle(): String
++getBrief(): String
++getDate(): String
++getFacilityId(): int
++getAgentIds(): List<Integer>
++setTitle(title: String): void
++setBrief(brief: String): void
++setDate(date: String): void
++setFacilityId(facilityId: int): void
++setAgentIds(agentIds: List<Integer>): void
++addAgentId(agentId: int): void
++removeAgentId(agentId: int): void
++toString(): String
+
+Message
+--------
+-id: int
+-recipientAgentId: int
+-body: String
+-senderUsername: String
+-isRead: boolean
+--------
++Message(id: int, recipientAgentId: int, body: String, senderUsername: String, isRead: boolean)
++Message(id: int, recipientAgentId: int, body: String, senderUsername: String)
++getId(): int
++getRecipientAgentId(): int
++getBody(): String
++getSenderUsername(): String
++isRead(): boolean

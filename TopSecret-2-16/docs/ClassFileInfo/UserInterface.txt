@@ -1,0 +1,83 @@
+UserInterface
+04/10/2026
+
+================
+--- Purpose ---
+================
+Terminal-based interactive UI controller. Authenticates the user via Password,
+then provides a menu-driven interface for browsing missions, agents, facilities,
+messages, and (for admins) the audit log.
+
+=======================
+--- Implementation ---
+=======================
+
+UserInterface
+------------------
+-projectControl: ProjectControl
+-scanner: Scanner
+-view: TerminalView
+-isAdmin: boolean
+-password: Password
+------------------
++UserInterface(password: Password, scanner: Scanner, databaseManager: DatabaseManager)
++UserInterface(projectControl: ProjectControl, scanner: Scanner)
++UserInterface(projectControl: ProjectControl, scanner: Scanner, isAdmin: boolean)
++setAdmin(isAdmin: boolean): void
++run(args: String[]): void
++run(): void
++searchMissions(): void
++argument_handler(args: String[]): String (static)
+-briefsMenu(): void
+-addMission(): void
+-agentsMenu(): void
+-displayAgent(id: int): void
+-addAgent(): void
+-facilitiesMenu(): void
+-displayFacility(id: int): void
+-addFacility(): void
+-editFacility(): void
+-messagesMenu(): void
+-sendAgentMessage(): void
+-viewInbox(): void
+-promoteUser(): void
+
+==============
+--- Menus ---
+==============
+Main Menu:
+  B - Mission Briefs
+  A - Agents
+  F - Facilities
+  G - Messages
+  E - Edit Facility
+  P - Promote User to Admin (admin only)
+  R - Review Audit Log (admin only)
+  X - Exit
+
+Missions Submenu: L (list), S (search), # (read), N (new), M (back)
+Agents Submenu:   L (list), # (detail), N (new), M (back)
+Facilities Submenu: L (list), # (detail), N (new), E (edit), M (back)
+Messages Submenu: S (send), V (view inbox), M (back)
+
+Command-line args processed in run(args):
+  -p  : change password
+  -u <username> : create a new user
+
+===============
+--- Testing ---
+===============
+Unit Tests:
+  - run(): navigates main menu and exits on X
+  - briefsMenu(): lists, searches, reads missions
+  - agentsMenu(): lists, views, adds agents
+  - facilitiesMenu(): lists, views, adds facilities
+  - messagesMenu(): sends and views messages
+  - argument_handler(): validates arg processing
+  - searchMissions(): search delegation
+  - setAdmin(): toggles admin flag
+
+Integration Tests:
+  - Full menu flow: login -> browse briefs -> exit
+  - Agent add flow: login -> add agent -> verify in list
+  - Facility add flow: login -> add facility -> verify

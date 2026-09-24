@@ -1,0 +1,26 @@
+AuditLog
+------------------
+-connection: Connection
+------------------
++EVENT_READ: String = "READ"
++EVENT_CREATE: String = "CREATE"
++EVENT_UPDATE: String = "UPDATE"
++TYPE_BRIEF: String = "BRIEF"
++TYPE_AGENT: String = "AGENT"
++TYPE_FACILITY: String = "FACILITY"
++TYPE_MISSION: String = "MISSION"
++TYPE_USER_ACCOUNT: String = "USER_ACCOUNT"
++TYPE_LOGIN: String = "LOGIN"
++TYPE_MESSAGE: String = "MESSAGE"
+------------------
++AuditLog(connection: Connection) throws SQLException
++record(eventType: String, contentType: String, contentId: String, username: String) throws SQLException
++recordRead(contentType: String, contentId: String, username: String) throws SQLException
++recordCreate(contentType: String, contentId: String, username: String) throws SQLException
++record(eventType: String, contentType: String, contentId: String, username: String, occurredAt: String) throws SQLException
++readAllLines(): List<String> throws SQLException
+
+Description:
+  Records all user actions (reads, creates, updates) into an audit_log SQLite table.
+  Each entry stores the event type, content type, content ID, acting username, and timestamp.
+  The table is created automatically in the constructor if it does not already exist.

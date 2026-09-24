@@ -1,0 +1,13 @@
+Cipher
+------------------
+-decryptionMap: Map<Character, Character>
+------------------
++Cipher(keyPath: String) throws IOException
++loadKey(keyPath: String): void throws IOException
++decrypt(input: String): String
+
+Description:
+  Loads a substitution cipher key from a two-line file where line 1 is
+  plaintext characters and line 2 is ciphertext characters. Builds a
+  mapping and decrypts input strings character-by-character. Characters
+  not in the map are passed through unchanged. Returns null for null input.

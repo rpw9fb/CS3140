@@ -1,0 +1,13 @@
+Joshua Thirumalai (rpw9fb)
+04/10/2026
+
+SearchFeature (Interface)
+----------------------------
+<<interface>>
+----------------------------
++searchMissions(phrase: String): List<Mission>
+
+Description:
+  Interface for mission search functionality. Any implementing class must
+  provide a method to search mission briefs by word or phrase (case-insensitive).
+  Currently implemented by DatabaseManager.

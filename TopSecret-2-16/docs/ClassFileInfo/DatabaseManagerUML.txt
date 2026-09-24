@@ -1,0 +1,127 @@
+Joshua Thirumalai (rpw9fb)
+Team Member C
+04/10/2026
+
+DatabaseManager implements SearchFeature
+----------------
+-random: Random
+-connection: Connection
+-fileHandler: FileHandler
+-auditLog: AuditLog
++DEFAULT_AUDIT_USERNAME: String = "unknown"
+----------------
+
+Constructors:
++DatabaseManager()
++DatabaseManager(name: String)
++DatabaseManager(name: String, random: Random)
++DatabaseManager(name: String, random: Random, skipLoad: boolean)
+
+Audit:
++getAuditLog(): AuditLog
+
+Connection:
++closeConnection(): void
+
+Country Methods:
++loadCountries(filename: String): void
++addCountry(name: String): void throws SQLException
++getAllCountries(): List<Country> throws SQLException
+
+Facility Methods:
++loadFacilities(fileName: String): void
++addFacility(name: String, abbreviation: String): void throws SQLException
++addFacility(name: String, abbreviation: String, country_id: Integer): void throws SQLException
++updateFacility(id: int, name: String, abbreviation: String): boolean throws SQLException
++updateFacility(id: int, name: String, abbreviation: String, country_id: Integer): boolean throws SQLException
++facilityExists(id: int): boolean throws SQLException
++getAllFacilities(): List<Facility> throws SQLException
++facilityDelete(id: int): boolean throws SQLException
+
+Agent Methods:
++loadAgents(filename: String): void
++addAgent(name: String, dob: String, dod: String, notes: String, facilityId: int): void throws SQLException
++updateAgent(id: int, name: String, dob: String, dod: String, notes: String, facilityId: int): boolean throws SQLException
++getAgentsFacility(facilityId: int): List<Integer> throws SQLException
++agentExists(id: int): boolean throws SQLException
++getAllAgents(): List<Agent> throws SQLException
++agentToFacility(agentId: int, facilityId: int): boolean throws SQLException
++agentDelete(id: int): boolean throws SQLException
+
+Mission Methods:
++loadData(tsv: String): void
++addMission(title: String, brief: String, date: String, facilityId: int, agentIds: List<Integer>): void throws SQLException
++updateMission(id: int, title: String, brief: String, date: String, facilityId: int, agentIds: List<Integer>): boolean throws SQLException
++getAllMissions(): List<Mission> throws SQLException
++getMissionById(id: int): Mission throws SQLException
++assignAgentToMission(missionId: int, agentId: int): void throws SQLException
++removeAgentFromMission(missionId: int, agentId: int): void throws SQLException
++getAgentsForMission(missionId: int): List<Agent> throws SQLException
++getMissionsForAgent(agentId: int): List<Mission> throws SQLException
++searchMissions(phrase: String): List<Mission>
++getAllTitles(): List<String>
++getMissionByNumber(number: int): String
++getMissionByNumber(number: int, username: String): String
++formatResults(missions: List<Mission>): String
+
+Message Methods:
++addAgentMessage(recipientAgentId: int, body: String, senderUsername: String): void throws SQLException
++getAgentMessagesForRecipientUsername(username: String): List<Message> throws SQLException
++markMessageAsRead(messageId: int): void throws SQLException
++getMessageById(id: int): Message throws SQLException
+
+Private:
+-getAgentIdsForMission(missionId: int): List<Integer> throws SQLException
+-initializeData(): void
+
+Unit Tests
+----------------
+1. Facility Features
+- testAddFacility(): verifies facility creation method is called
+- testFacilityExists(): verifies true/false behavior for existing vs non-existing facilities
+- testGetAllFacilities(): verifies retrieval of facility list
+- testFacilityDelete(): verifies facility deletion
+
+2. Agent Features
+- testGetAllAgents(): verifies retrieval of all agents
+- testAgentExists(): verifies existence check for agents
+- testGetAllAgentsFacility(): verifies retrieval of agent IDs at a facility
+- testAgentToFacility(): verifies mapping between agent to facility
+- testAgentDelete(): verifies agent deletion
+
+3. Mission Features
+- testAddMission(): verifies adding a mission
+- testSearchMissions(): verifies searching missions
+- testGetAllTitles(): verifies retrieving all titles
+- testGetMissionByNumber(): verifies getting a mission through a specific ID
+- testAssignAgentToMission(): verifies agent assignment
+- testRemoveAgentFromMission(): verifies agent removal
+- testGetAgentsForMission(): verifies agents listed for mission
+- testGetMissionsForAgent(): verifies missions listed for agent
+
+4. Message Features
+- testAddAgentMessage(): verifies message creation
+- testGetAgentMessagesForRecipientUsername(): verifies inbox retrieval
+
+Integration Tests
+--------------------
+1. Facility Integration
+- testAddAndGetFacilities(): verifies facilities inserted into database
+- testFacilityExists(): verifies existence through real DB
+
+2. Agent Integration
+- testAddAndGetAgents(): verifies agent insertion and retrieval
+- testAgentExists(): verifies agent existence in database
+- testAgentToFacility(): verifies if mapping agent to facility for real DB is valid
+
+3. Mission Integration
+- testAddMissionAndRetrieve(): verifies mission creation w/ agents and facility
+- testGetAllTitles(): verifies correct format
+- testSearchMissions(): verifies mission search w/ real DB
+
+4. Audit Log Integration
+- testAuditLogOnMissionRead(): verifies audit log entry is created
+
+5. Delete
+- testFacilityDeleteBlockedByAgent(): verifies facility cant be deleted if agents linked to it
+- testAgentDeleteBlockedByMission(): verifies agent cant be deleted if assigned to mission
